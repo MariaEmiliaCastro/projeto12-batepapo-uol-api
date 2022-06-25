@@ -1,6 +1,7 @@
 {
   "name": "projeto12-batepapo-uol-api",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/MariaEmiliaCastro/projeto12-batepapo-uol-api/issues"
   },
-  "homepage": "https://github.com/MariaEmiliaCastro/projeto12-batepapo-uol-api#readme"
+  "homepage": "https://github.com/MariaEmiliaCastro/projeto12-batepapo-uol-api#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.3",
+    "express": "^4.18.1",
+    "joi": "^17.6.0"
+  }
 }
