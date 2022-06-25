@@ -45,7 +45,6 @@ app.post("/participants", async (req, res) => {
             db.collection("messages").insertOne({ from: participant.name, to: 'Todos', text: 'entra na sala...', type: 'status', time: new Date().toLocaleTimeString() });
             res.sendStatus(201);
         } else {
-            console.log("User ja cadastrado!");
             res.sendStatus(409);
         }
     }
@@ -76,8 +75,10 @@ app.post("/messages", async (req, res) => {
         if(validate.error){
             res.sendStatus(422);
         }else{
-            await db.collection("messages").insertOne({...req.body, time: new Date().toLocaleTimeString()});
-             res.sendStatus(201);
+            const messageReceived = await db.collection("messages").insertOne({from: sender.toString(), ...req.body, time: new Date().toLocaleTimeString()});
+            console.log("Message Received");
+            console.log(req.body)
+            res.sendStatus(201);
         }
     }
 
@@ -88,13 +89,13 @@ app.get("/messages", async (req, res) => {
     const user = req.headers['user'];
 
     if(!limit){
-        const messages = await db.collection("messages").find({$or: [{to: (user)}, {type: 'message'}]}).toArray();
+        const messages = await db.collection("messages").find({$or: [{$or: [{to: (user)}, {type: 'message'}]}, {type: 'status'}]}).toArray();
         if(messages){
             console.log(messages);
             res.send(messages);
         }
     }else{
-        const messages = await db.collection("messages").find({$or: [{to: (user)}, {type: 'message'}]}).limit(parseInt(limit)).toArray();
+        let messages = await db.collection("messages").find({$or: [{$or: [{to: (user)}, {type: 'message'}]}, {type: 'status'}, {from: user}]}).toArray();
         if(messages){
             console.log(messages);
             res.send(messages);
@@ -107,13 +108,11 @@ app.post("/status", async (req, res) => {
     const sender = req.headers['user'];
 
     const user = await db.collection("participants").findOne({ name: sender.toString() })
-    console.log(user);
     if (user === null){
         res.sendStatus(404);
     }else{
         await db.collection("participants").updateOne({name : sender.toString()}, {$set: { lastStatus: Date.now()}})
         const userTwo = await db.collection("participants").findOne({ name: sender.toString() })
-        console.log("User depois do update: ", userTwo);
         res.sendStatus(200);
     }
 
@@ -122,15 +121,12 @@ app.post("/status", async (req, res) => {
 
 setInterval(() => {
     const timeNow = Date.now();
-    console.log(timeNow);
+
     db.collection("participants").find({lastStatus: { $lt: (timeNow - 10000) }}).toArray().then(inactiveUsers => {
         if(inactiveUsers.length === 0){
-            console.log("Nao existem users inativos");
         }else{
-            console.log("Eles estao aqui");
-            console.log(inactiveUsers);
             for(let i = 0; i < inactiveUsers.length; i++){
-                db.collection("messages").insertOne({ from: inactiveUsers[i].name, to: 'Todos', text: 'saiu na sala...', type: 'status', time: new Date().toLocaleTimeString() });
+                db.collection("messages").insertOne({ from: inactiveUsers[i].name, to: 'Todos', text: 'sai da sala...', type: 'status', time: new Date().toLocaleTimeString() });
             }
             db.collection("participants").deleteMany({lastStatus: { $lt: (timeNow - 10000) }});
         }        
