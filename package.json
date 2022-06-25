@@ -1,0 +1,19 @@
+{
+  "name": "projeto12-batepapo-uol-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MariaEmiliaCastro/projeto12-batepapo-uol-api.git"
+  },
+  "author": "Maria Emilia Castro",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MariaEmiliaCastro/projeto12-batepapo-uol-api/issues"
+  },
+  "homepage": "https://github.com/MariaEmiliaCastro/projeto12-batepapo-uol-api#readme"
+}
