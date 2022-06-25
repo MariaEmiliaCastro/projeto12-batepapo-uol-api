@@ -76,8 +76,6 @@ app.post("/messages", async (req, res) => {
             res.sendStatus(422);
         }else{
             const messageReceived = await db.collection("messages").insertOne({from: sender.toString(), ...req.body, time: new Date().toLocaleTimeString()});
-            console.log("Message Received");
-            console.log(req.body)
             res.sendStatus(201);
         }
     }
@@ -91,13 +89,11 @@ app.get("/messages", async (req, res) => {
     if(!limit){
         const messages = await db.collection("messages").find({$or: [{$or: [{to: (user)}, {type: 'message'}]}, {type: 'status'}]}).toArray();
         if(messages){
-            console.log(messages);
             res.send(messages);
         }
     }else{
         let messages = await db.collection("messages").find({$or: [{$or: [{to: (user)}, {type: 'message'}]}, {type: 'status'}, {from: user}]}).toArray();
         if(messages){
-            console.log(messages);
             res.send(messages);
         }  
     }
@@ -112,7 +108,6 @@ app.post("/status", async (req, res) => {
         res.sendStatus(404);
     }else{
         await db.collection("participants").updateOne({name : sender.toString()}, {$set: { lastStatus: Date.now()}})
-        const userTwo = await db.collection("participants").findOne({ name: sender.toString() })
         res.sendStatus(200);
     }
 
